@@ -2,6 +2,8 @@ package com.maugallo.munify_backend.incident;
 
 import com.maugallo.munify_backend.citizen.Citizen;
 import com.maugallo.munify_backend.employee.Employee;
+import com.maugallo.munify_backend.incidentCategory.IncidentCategory;
+import com.maugallo.munify_backend.incidentMedia.IncidentMedia;
 import com.maugallo.munify_backend.municipality.Municipality;
 import jakarta.persistence.*;
 import lombok.*;

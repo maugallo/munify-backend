@@ -1,13 +1,13 @@
 spring:
   datasource:
     url: jdbc:sqlserver://localhost:1433;databaseName=Munify;encrypt=true;trustServerCertificate=true
-    username: maugallo
+    username: sa
     password: TuPasswordFuerte123!
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
 
   jpa:
     hibernate:
-      ddl-auto: none       # none / validate / update
+      ddl-auto: update       # none / validate / update
     show-sql: true
     properties:
       hibernate:

@@ -1,5 +1,6 @@
-package com.maugallo.munify_backend.incident;
+package com.maugallo.munify_backend.incidentMedia;
 
+import com.maugallo.munify_backend.incident.Incident;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
