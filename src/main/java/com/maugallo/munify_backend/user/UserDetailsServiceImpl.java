@@ -1,5 +1,7 @@
 package com.maugallo.munify_backend.user;
 
+import com.maugallo.munify_backend.citizen.Citizen;
+import com.maugallo.munify_backend.employee.Employee;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
