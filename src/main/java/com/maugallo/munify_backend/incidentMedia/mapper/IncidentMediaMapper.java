@@ -1,8 +1,8 @@
 package com.maugallo.munify_backend.incidentMedia.mapper;
 
 import com.maugallo.munify_backend.incidentMedia.IncidentMedia;
-import com.maugallo.munify_backend.incidentMedia.IncidentMediaRequestDTO;
-import com.maugallo.munify_backend.incidentMedia.IncidentMediaResponseDTO;
+import com.maugallo.munify_backend.incidentMedia.dto.IncidentMediaRequestDTO;
+import com.maugallo.munify_backend.incidentMedia.dto.IncidentMediaResponseDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

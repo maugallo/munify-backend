@@ -1,6 +1,6 @@
 package com.maugallo.munify_backend.municipality.dto;
 
-import com.maugallo.munify_backend.municipalityFeature.FeatureUpdateDTO;
+import com.maugallo.munify_backend.municipalityFeature.dto.FeatureUpdateDTO;
 
 import java.util.List;
 

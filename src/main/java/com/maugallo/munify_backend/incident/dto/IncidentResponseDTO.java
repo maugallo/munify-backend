@@ -1,9 +1,9 @@
-package com.maugallo.munify_backend.incident;
+package com.maugallo.munify_backend.incident.dto;
 
-import com.maugallo.munify_backend.citizen.CitizenResponseDTO;
-import com.maugallo.munify_backend.employee.EmployeeResponseDTO;
-import com.maugallo.munify_backend.incidentCategory.IncidentCategoryResponseDTO;
-import com.maugallo.munify_backend.incidentMedia.IncidentMediaResponseDTO;
+import com.maugallo.munify_backend.citizen.dto.CitizenResponseDTO;
+import com.maugallo.munify_backend.employee.dto.EmployeeResponseDTO;
+import com.maugallo.munify_backend.incidentCategory.dto.IncidentCategoryResponseDTO;
+import com.maugallo.munify_backend.incidentMedia.dto.IncidentMediaResponseDTO;
 import com.maugallo.munify_backend.municipality.Municipality;
 
 import java.util.List;

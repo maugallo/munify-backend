@@ -1,4 +1,4 @@
-package com.maugallo.munify_backend.incidentCategory;
+package com.maugallo.munify_backend.incidentCategory.dto;
 
 import com.maugallo.munify_backend.incident.Incident;
 

@@ -1,4 +1,4 @@
-package com.maugallo.munify_backend.employee;
+package com.maugallo.munify_backend.employee.dto;
 
 import com.maugallo.munify_backend.municipality.Municipality;
 

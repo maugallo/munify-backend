@@ -1,6 +1,7 @@
-package com.maugallo.munify_backend.incident;
+package com.maugallo.munify_backend.incident.dto;
 
-import com.maugallo.munify_backend.incidentMedia.IncidentMediaRequestDTO;
+import com.maugallo.munify_backend.incident.IncidentStatus;
+import com.maugallo.munify_backend.incidentMedia.dto.IncidentMediaRequestDTO;
 import com.maugallo.munify_backend.municipality.Municipality;
 import com.maugallo.munify_backend.validation.EnumValidator;
 

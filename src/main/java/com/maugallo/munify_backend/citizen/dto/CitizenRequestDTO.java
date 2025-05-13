@@ -1,4 +1,4 @@
-package com.maugallo.munify_backend.citizen;
+package com.maugallo.munify_backend.citizen.dto;
 
 import com.maugallo.munify_backend.municipality.Municipality;
 

@@ -1,5 +1,6 @@
-package com.maugallo.munify_backend.municipality;
+package com.maugallo.munify_backend.municipality.mapper;
 
+import com.maugallo.munify_backend.municipality.Municipality;
 import com.maugallo.munify_backend.municipality.dto.MunicipalityResponseDTO;
 import org.mapstruct.Mapper;
 

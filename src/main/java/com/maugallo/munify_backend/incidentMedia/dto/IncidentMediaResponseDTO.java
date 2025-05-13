@@ -1,4 +1,4 @@
-package com.maugallo.munify_backend.incidentMedia;
+package com.maugallo.munify_backend.incidentMedia.dto;
 
 import com.maugallo.munify_backend.incident.Incident;
 
