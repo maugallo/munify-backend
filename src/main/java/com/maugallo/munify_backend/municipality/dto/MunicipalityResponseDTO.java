@@ -1,6 +1,6 @@
-package com.maugallo.munify_backend.municipality;
+package com.maugallo.munify_backend.municipality.dto;
 
-import com.maugallo.munify_backend.municipalityFeature.MunicipalityFeature;
+import com.maugallo.munify_backend.municipalityFeature.MunicipalityFeatureResponseDTO;
 
 import java.util.List;
 
@@ -14,5 +14,5 @@ public record MunicipalityResponseDTO(Long id,
 
                                       String secondaryColor,
 
-                                      List<MunicipalityFeature> features) {
+                                      List<MunicipalityFeatureResponseDTO> features) {
 }

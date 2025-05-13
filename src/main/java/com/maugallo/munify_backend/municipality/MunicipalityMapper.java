@@ -1,5 +1,6 @@
 package com.maugallo.munify_backend.municipality;
 
+import com.maugallo.munify_backend.municipality.dto.MunicipalityResponseDTO;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
