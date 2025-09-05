@@ -4,7 +4,6 @@ import com.maugallo.munify_backend.incident.Incident;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -20,17 +19,23 @@ public class IncidentMedia {
     @GeneratedValue
     private Long id;
 
-    @Column
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private IncidentMediaType type;
 
     @Column
-    private String url;
+    private String storageKey;
+
+    @Column
+    private String mime;
+
+    @Column
+    private Long size;
+
+    @Column
+    private String etag;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
 
     @Column
     private Boolean isEnabled;

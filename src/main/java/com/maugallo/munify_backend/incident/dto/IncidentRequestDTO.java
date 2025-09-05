@@ -1,28 +1,46 @@
 package com.maugallo.munify_backend.incident.dto;
 
-import com.maugallo.munify_backend.incident.IncidentStatus;
 import com.maugallo.munify_backend.incidentMedia.dto.IncidentMediaRequestDTO;
-import com.maugallo.munify_backend.municipality.Municipality;
-import com.maugallo.munify_backend.validation.EnumValidator;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
 
 import java.util.List;
 
-public record IncidentRequestDTO(String description,
+public record IncidentRequestDTO(
+    @NotBlank(message = "title es requerido")
+    @Size(min = 3, max = 40, message = "title fuera de rango")
+    String title,
 
-                                 @EnumValidator(enumClass = IncidentStatus.class)
-                                 String status,
+    @Size(max = 500, message = "description demasiado larga")
+    String description,
 
-                                 Double latitude,
+    @NotNull(message = "latitude es requerida")
+    @DecimalMin(value = "-90.0", inclusive = true, message = "latitude fuera de rango")
+    @DecimalMax(value = "90.0", inclusive = true, message = "latitude fuera de rango")
+    Double latitude,
 
-                                 Double longitude,
+    @NotNull(message = "longitude es requerida")
+    @DecimalMin(value = "-180.0", inclusive = true, message = "longitude fuera de rango")
+    @DecimalMax(value = "180.0", inclusive = true, message = "longitude fuera de rango")
+    Double longitude,
 
-                                 Municipality municipality,
+    @NotBlank(message = "address es requerida")
+    @Size(max = 80, message = "address demasiado larga")
+    String address,
 
-                                 Long citizenId,
+    @NotNull(message = "medias es requerido")
+    @Size(max = 5, message = "máximo 5 medias por incidente")
+    List<@Valid IncidentMediaRequestDTO> medias,
 
-                                 Long employeeId,
+    @NotBlank(message = "citizenId es requerido")
+    @Pattern(regexp = "\\d+", message = "citizenId debe ser numérico")
+    String citizenId,
 
-                                 Long categoryId,
+    @NotBlank(message = "municipalityId es requerido")
+    @Pattern(regexp = "\\d+", message = "citizenId debe ser numérico")
+    String municipalityId,
 
-                                 List<IncidentMediaRequestDTO> medias) {
-}
+    @NotBlank(message = "categoryId es requerido")
+    @Pattern(regexp = "\\d+", message = "citizenId debe ser numérico")
+    String categoryId
+) { }

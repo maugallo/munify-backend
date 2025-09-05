@@ -1,12 +1,25 @@
 package com.maugallo.munify_backend.incidentMedia.dto;
 
 import com.maugallo.munify_backend.incidentMedia.IncidentMediaType;
-import com.maugallo.munify_backend.validation.EnumValidator;
+import jakarta.validation.constraints.*;
 
-public record IncidentMediaRequestDTO(String url,
+/* Medias ya subidos al storage pero en zona de staging,
+* todavía no asociados con ningún incidente. */
 
-                                      @EnumValidator(enumClass = IncidentMediaType.class)
-                                      String type,
+public record IncidentMediaRequestDTO(
+    @NotBlank(message = "storageKey es requerido")
+    @Pattern(regexp = "^municipalities/\\d+/(staging|incidents)/.+$", message = "storageKey inválido")
+    String storageKey,
 
-                                      Long incidentId) {
-}
+    @NotNull(message = "type es requerido")
+    IncidentMediaType type,
+
+    @NotBlank(message = "mime es requerido")
+    @Pattern(regexp = "^(image/(jpeg|png|webp|heic)|video/(mp4|quicktime))$", message = "mime no permitido")
+    String mime,
+
+    @NotNull(message = "size es requerido")
+    @Positive(message = "size debe ser positivo")
+    @Max(value = 100L * 1024 * 1024, message = "size excede el máximo permitido") // 100 MiB
+    Long size
+) { }

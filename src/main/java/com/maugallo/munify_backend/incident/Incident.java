@@ -1,5 +1,6 @@
 package com.maugallo.munify_backend.incident;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.maugallo.munify_backend.citizen.Citizen;
 import com.maugallo.munify_backend.employee.Employee;
 import com.maugallo.munify_backend.incidentCategory.IncidentCategory;
@@ -27,16 +28,22 @@ public class Incident {
     private Long id;
 
     @Column
-    private String description;
+    private String title;
 
     @Column
-    private String status;
+    private String description;
+
+    @Enumerated(EnumType.STRING)
+    private IncidentStatus status;
 
     @Column
     private Double latitude;
 
     @Column
     private Double longitude;
+
+    @Column
+    private String address;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -47,23 +54,46 @@ public class Incident {
     @Column
     private Boolean isEnabled;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "municipality_id")
-    private Municipality municipality;
+    @Column(name = "municipality_id", nullable = false)
+    private Long municipalityId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "citizen_id")
-    private Citizen citizen;
+    @Column(name = "citizen_id", nullable = false)
+    private Long citizenId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "employee_id")
-    private Employee employee;
+    @Column(name = "employee_id")
+    private Long employeeId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
-    private IncidentCategory category;
+    @Column(name = "category_id", nullable = false)
+    private Long categoryId;
 
     @OneToMany(mappedBy = "incident")
     private List<IncidentMedia> medias = new ArrayList<>();
+
+    /* Asociaciones "ocultas" - Temporal de MVP
+    * Solo para que JPA genere las FK */
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "municipality_id", insertable = false, updatable = false)
+    @JsonIgnore
+    @ToString.Exclude
+    protected Municipality municipality;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "citizen_id", insertable = false, updatable = false)
+    @JsonIgnore
+    @ToString.Exclude
+    protected Citizen citizen;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "employee_id", insertable = false, updatable = false)
+    @JsonIgnore
+    @ToString.Exclude
+    protected Employee employee;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", insertable = false, updatable = false)
+    @JsonIgnore
+    @ToString.Exclude
+    protected IncidentCategory category;
 
 }

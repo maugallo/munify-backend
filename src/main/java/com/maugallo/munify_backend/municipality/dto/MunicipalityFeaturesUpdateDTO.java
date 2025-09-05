@@ -4,5 +4,4 @@ import com.maugallo.munify_backend.municipalityFeature.dto.FeatureUpdateDTO;
 
 import java.util.List;
 
-public record MunicipalityFeaturesUpdateDTO(List<FeatureUpdateDTO> features) {
-}
+public record MunicipalityFeaturesUpdateDTO(List<FeatureUpdateDTO> features) { }
