@@ -8,7 +8,7 @@ import jakarta.validation.constraints.*;
 
 public record IncidentMediaRequestDTO(
     @NotBlank(message = "storageKey es requerido")
-    @Pattern(regexp = "^municipalities/\\d+/(staging|incidents)/.+$", message = "storageKey inválido")
+    @Pattern(regexp = "^municipalities/\\d+/(staging)/.+$", message = "storageKey inválido")
     String storageKey,
 
     @NotNull(message = "type es requerido")
@@ -20,6 +20,6 @@ public record IncidentMediaRequestDTO(
 
     @NotNull(message = "size es requerido")
     @Positive(message = "size debe ser positivo")
-    @Max(value = 100L * 1024 * 1024, message = "size excede el máximo permitido") // 100 MiB
+    @Max(value = 50L * 1024 * 1024, message = "size excede el máximo permitido") // 50 MiB
     Long size
 ) { }

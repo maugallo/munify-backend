@@ -71,7 +71,7 @@ public class MediaStorageImpl implements MediaStorage {
     }
 
     @Override
-    public HeadObjectInfo head(String storageKey) {
+    public HeadObjectInfo getHead(String storageKey) {
         var head = s3.headObject(HeadObjectRequest.builder()
                 .bucket(props.bucket())
                 .key(storageKey)
@@ -104,7 +104,7 @@ public class MediaStorageImpl implements MediaStorage {
     }
 
     @Override
-    public String publicUrl(String storageKey) {
+    public String getPublicUrl(String storageKey) {
         if (props.endpoint() != null && !props.endpoint().isBlank()) {
             // MinIO (path-style): http://host:9000/{bucket}/{key}
             return props.endpoint().replaceAll("/$", "")

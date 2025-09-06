@@ -1,8 +1,8 @@
 package com.maugallo.munify_backend.incidentMedia.dto.prepare;
 
 public record PresignedUrlDTO(
-        String url,                       // URL de PUT
-        String method,                    // "PUT"
-        long   expiresAtSec,              // epoch seconds
+        String url,
+        String method,
+        long   expiresAtSec,
         java.util.Map<String,String> requiredHeaders
 ) { }
