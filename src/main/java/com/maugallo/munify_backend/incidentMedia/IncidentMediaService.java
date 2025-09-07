@@ -1,5 +1,6 @@
 package com.maugallo.munify_backend.incidentMedia;
 
+import com.maugallo.munify_backend.exception.StorageUnavailableException;
 import com.maugallo.munify_backend.exception.UnsupportedMediaTypeException;
 import com.maugallo.munify_backend.incident.Incident;
 import com.maugallo.munify_backend.incidentMedia.dto.IncidentMediaRequestDTO;
@@ -7,7 +8,9 @@ import com.maugallo.munify_backend.incidentMedia.dto.prepare.*;
 import com.maugallo.munify_backend.media.KeyBuilder;
 import com.maugallo.munify_backend.media.MediaStorage;
 import com.maugallo.munify_backend.media.models.HeadObjectInfo;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -41,6 +44,21 @@ public class IncidentMediaService {
                 }).toList();
 
         return new IncidentMediaPrepareResponseDTO(items);
+    }
+
+    public void abortUpload(Long municipalityId, String storageKey) {
+        var prefix = "municipalities/" + municipalityId + "/staging/";
+        if (!storageKey.startsWith(prefix))
+            throw new AccessDeniedException("storageKey ajeno al municipio o fuera de staging/.");
+
+        try {
+            mediaStorage.deleteObject(storageKey);
+        } catch (S3Exception s3e) {
+            if (s3e.statusCode() != 404) // 404 Considerado éxito.
+                throw new StorageUnavailableException("Fallo al abortar upload");
+        } catch (Exception e) {
+            throw new StorageUnavailableException("Fallo al abortar upload");
+        }
     }
 
     public IncidentMedia moveIncidentToCommit(IncidentMediaRequestDTO media, Incident incident, Long municipalityId) {

@@ -3,7 +3,7 @@ package com.maugallo.munify_backend.incident;
 import com.maugallo.munify_backend.config.GlobalMapperConfig;
 import com.maugallo.munify_backend.incident.dto.IncidentRequestDTO;
 import com.maugallo.munify_backend.incident.dto.IncidentResponseDTO;
-import com.maugallo.munify_backend.incidentMedia.IncidentMediaLinkResolver;
+import com.maugallo.munify_backend.media.MediaLinkBuilder;
 import com.maugallo.munify_backend.incidentMedia.IncidentMediaMapper;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
@@ -57,7 +57,7 @@ public interface IncidentMapper {
     @Mapping(target = "employeeId", source = "employeeId")
     // Implicit mapping (List<IncidentMedia> --> List<IncidentMediaResponseDTO>)
     @Mapping(target = "medias", source = "medias")
-    IncidentResponseDTO toDto(Incident incident, @Context IncidentMediaLinkResolver linkResolver);
+    IncidentResponseDTO toDto(Incident incident, @Context MediaLinkBuilder linkBuilder);
 
 }
 

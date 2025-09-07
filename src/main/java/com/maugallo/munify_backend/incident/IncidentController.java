@@ -7,20 +7,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
+import java.util.List;
 
 @RestController
 @RequestMapping("api/municipalities/{municipalityId}/incidents")
 public class IncidentController {
 
     private final IncidentService incidentService;
-    private final IncidentRepository incidentRepository;
-    private final IncidentMapper incidentMapper;
 
-    public IncidentController(IncidentService incidentService, IncidentRepository incidentRepository, IncidentMapper incidentMapper) {
+    public IncidentController(IncidentService incidentService) {
         this.incidentService = incidentService;
-        this.incidentRepository = incidentRepository;
-        this.incidentMapper = incidentMapper;
     }
 
     @PostMapping()
@@ -30,6 +26,23 @@ public class IncidentController {
     ) {
         var responseDto = incidentService.createIncident(municipalityId, body);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+    }
+
+    @GetMapping()
+    public ResponseEntity<List<IncidentResponseDTO>> getIncidents(
+            @PathVariable Long municipalityId
+    ) {
+        var incidents = incidentService.getIncidents(municipalityId);
+        return ResponseEntity.status(HttpStatus.OK).body(incidents);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<IncidentResponseDTO> getIncident(
+            @PathVariable Long municipalityId,
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "false") boolean includeMediaUrls
+    ) {
+        return ResponseEntity.ok(incidentService.getIncident(id, municipalityId, includeMediaUrls));
     }
 
 }

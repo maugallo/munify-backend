@@ -76,6 +76,24 @@ public class GlobalExceptionHandler {
         return pd;
     }
 
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ProblemDetail handleResourceNotFound(ResourceNotFoundException ex, HttpServletRequest req) {
+        var pd = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
+        pd.setTitle("Resource not found");
+        pd.setDetail(ex.getMessage());
+        pd.setProperty("path", req.getRequestURI());
+        return pd;
+    }
+
+    @ExceptionHandler(StorageUnavailableException.class)
+    public ProblemDetail handleStorageUnavailable(StorageUnavailableException ex, HttpServletRequest req) {
+        var pd = ProblemDetail.forStatus(HttpStatus.BAD_GATEWAY);
+        pd.setTitle("Storage error");
+        pd.setDetail(ex.getMessage());
+        pd.setProperty("path", req.getRequestURI());
+        return pd;
+    }
+
     @ExceptionHandler(S3Exception.class)
     public ProblemDetail handleS3(S3Exception ex, HttpServletRequest req) {
         var pd = ProblemDetail.forStatus(HttpStatus.BAD_GATEWAY);

@@ -15,6 +15,4 @@ public interface MediaStorage {
     void copyObject(String sourceKey, String destinationKey);
 
     void deleteObject(String storageKey);
-
-    String getPublicUrl(String storageKey);
 }

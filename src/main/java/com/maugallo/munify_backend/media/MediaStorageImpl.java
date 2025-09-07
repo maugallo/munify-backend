@@ -103,22 +103,4 @@ public class MediaStorageImpl implements MediaStorage {
                 .build());
     }
 
-    @Override
-    public String getPublicUrl(String storageKey) {
-        if (props.endpoint() != null && !props.endpoint().isBlank()) {
-            // MinIO (path-style): http://host:9000/{bucket}/{key}
-            return props.endpoint().replaceAll("/$", "")
-                    + "/" + props.bucket()
-                    + "/" + urlEncode(storageKey);
-        } else {
-            // AWS S3 (virtual-host): https://{bucket}.s3.{region}.amazonaws.com/{key}
-            return "https://%s.s3.%s.amazonaws.com/%s"
-                    .formatted(props.bucket(), props.region(), urlEncode(storageKey));
-        }
-    }
-
-    private static String urlEncode(String key) {
-        return key.replace(" ", "%20");
-    }
-
 }
