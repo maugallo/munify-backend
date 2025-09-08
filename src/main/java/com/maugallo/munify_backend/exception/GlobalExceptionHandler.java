@@ -49,15 +49,6 @@ public class GlobalExceptionHandler {
         return pd;
     }
 
-    @ExceptionHandler(AccessDeniedException.class)
-    public ProblemDetail handleAccess(AccessDeniedException ex, HttpServletRequest req) {
-        var pd = ProblemDetail.forStatus(HttpStatus.FORBIDDEN);
-        pd.setTitle("Forbidden");
-        pd.setDetail(ex.getMessage());
-        pd.setProperty("path", req.getRequestURI());
-        return pd;
-    }
-
     @ExceptionHandler({ IllegalArgumentException.class, IllegalStateException.class })
     public ProblemDetail handleBadRequest(RuntimeException ex, HttpServletRequest req) {
         var pd = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);

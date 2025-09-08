@@ -21,13 +21,13 @@ public class IncidentCategoryService {
         var categories = incidentCategoryRepository.findAll();
 
         return categories.stream()
-                .map(incidentCategoryMapper::toDto)
+                .map(incidentCategoryMapper::toResponse)
                 .toList();
     }
 
     public IncidentCategoryResponseDTO createCategory(IncidentCategoryRequestDTO categoryRequest) {
         var category = incidentCategoryRepository.saveAndFlush(incidentCategoryMapper.toEntity(categoryRequest));
-        return incidentCategoryMapper.toDto(category);
+        return incidentCategoryMapper.toResponse(category);
     }
 
 }

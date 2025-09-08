@@ -46,16 +46,16 @@ public class IncidentService {
                 .orElseThrow(() -> new ResourceNotFoundException("No se encontró un incidente con ese ID"));
 
         if (includeMediaUrls)
-            return incidentMapper.toDto(incident, linkBuilder);
+            return incidentMapper.toResponse(incident, linkBuilder);
         else
-            return incidentMapper.toDto(incident);
+            return incidentMapper.toResponse(incident);
     }
 
     public List<IncidentResponseDTO> getIncidents(Long municipalityId) {
         var incidents = incidentRepository.findAllByMunicipalityIdAndIsEnabledTrue(municipalityId);
 
         return incidents.stream()
-                .map(incidentMapper::toDto)
+                .map(incidentMapper::toResponse)
                 .toList();
     }
 
@@ -75,7 +75,7 @@ public class IncidentService {
             incidentMediaRepository.saveAllAndFlush(persistedMedias);
             incident.setMedias(persistedMedias);
 
-            return incidentMapper.toDto(incident);
+            return incidentMapper.toResponse(incident);
         } catch (RuntimeException ex) {
             persistedMedias.forEach(media -> safeDelete(media.getStorageKey()));
             throw ex;

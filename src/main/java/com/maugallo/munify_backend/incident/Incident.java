@@ -66,6 +66,7 @@ public class Incident {
     @Column(name = "category_id", nullable = false)
     private Long categoryId;
 
+    @Builder.Default
     @OneToMany(mappedBy = "incident")
     private List<IncidentMedia> medias = new ArrayList<>();
 

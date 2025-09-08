@@ -27,6 +27,10 @@ public interface IncidentMapper {
     @Mapping(target = "employeeId", ignore = true)
     @Mapping(target = "categoryId", source = "categoryId")
     @Mapping(target = "medias", ignore = true) // las medias se asocian en el commit del servicio
+    @Mapping(target = "municipality", ignore = true)
+    @Mapping(target = "citizen", ignore = true)
+    @Mapping(target = "employee", ignore = true)
+    @Mapping(target = "category", ignore = true)
     Incident toEntity(IncidentRequestDTO incident);
 
     /* Medias without readable urls. */
@@ -41,8 +45,8 @@ public interface IncidentMapper {
     @Mapping(target = "citizenId", source = "citizenId")
     @Mapping(target = "employeeId", source = "employeeId")
     // Implicit mapping (List<IncidentMedia> --> List<IncidentMediaResponseDTO>)
-    @Mapping(target = "medias", source = "medias")
-    IncidentResponseDTO toDto(Incident incident);
+    @Mapping(target = "medias", source = "medias", qualifiedByName = "noUrl")
+    IncidentResponseDTO toResponse(Incident incident);
 
     /* Medias with readable urls. */
     @Mapping(target = "id", source = "id")
@@ -56,8 +60,8 @@ public interface IncidentMapper {
     @Mapping(target = "citizenId", source = "citizenId")
     @Mapping(target = "employeeId", source = "employeeId")
     // Implicit mapping (List<IncidentMedia> --> List<IncidentMediaResponseDTO>)
-    @Mapping(target = "medias", source = "medias")
-    IncidentResponseDTO toDto(Incident incident, @Context MediaLinkBuilder linkBuilder);
+    @Mapping(target = "medias", source = "medias", qualifiedByName = "withUrl")
+    IncidentResponseDTO toResponse(Incident incident, @Context MediaLinkBuilder linkBuilder);
 
 }
 

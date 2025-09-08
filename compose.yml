@@ -1,0 +1,34 @@
+# compose.yml
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    ports:
+      - "1433:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "${DB_PASSWORD}"
+      MSSQL_PID: "Developer"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c '</dev/tcp/127.0.0.1/1433' || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
+
+  sqlserver-init:
+    image: mcr.microsoft.com/mssql-tools
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    environment:
+      MSSQL_SA_PASSWORD: "${DB_PASSWORD}"
+    entrypoint: ["/bin/sh", "-c"]
+    command: >
+      "/opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P \"$DB_PASSWORD\" -C
+       -Q \"IF DB_ID('Munify') IS NULL CREATE DATABASE Munify;\""
+    restart: "no"
+
+volumes:
+  sqlserver_data:

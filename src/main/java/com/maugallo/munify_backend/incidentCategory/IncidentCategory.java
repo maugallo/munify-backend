@@ -25,6 +25,7 @@ public class IncidentCategory {
     @Column
     private Boolean isEnabled;
 
+    @Builder.Default
     @OneToMany(mappedBy = "category")
     private List<Incident> incidents = new ArrayList<>();
 

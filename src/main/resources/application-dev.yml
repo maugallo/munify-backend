@@ -1,21 +1,3 @@
-spring:
-  profiles:
-    active: dev
-
-  datasource:
-    url: jdbc:sqlserver://localhost:1433;databaseName=Munify;encrypt=true;trustServerCertificate=true
-    username: sa
-    password: TuPasswordFuerte123!
-    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
-
-  jpa:
-    hibernate:
-      ddl-auto: create       # none / validate / update / create / create-drop
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-
 storage:
   bucket: munify-media
   region: us-east-1
@@ -24,6 +6,3 @@ storage:
   secretKey: minioadmin
   putTtl: PT10M   # 10 minutos
   getTtl: PT5M   # 5 minutos
-
-server:
-  port: 8080
