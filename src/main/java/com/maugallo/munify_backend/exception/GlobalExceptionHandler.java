@@ -1,107 +1,244 @@
 package com.maugallo.munify_backend.exception;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.ConstraintViolationException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ProblemDetail;
+import lombok.NonNull;
+import org.flywaydb.core.internal.util.StringUtils;
+import org.springframework.beans.TypeMismatchException;
+import org.springframework.http.*;
 
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+
+import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import software.amazon.awssdk.services.s3.model.S3Exception;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.server.UnsupportedMediaTypeStatusException;
+import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
-import java.nio.file.AccessDeniedException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
-public class GlobalExceptionHandler {
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+    
+    // VALIDACIÓN (@Valid @RequestBody)
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(
+            @NonNull MethodArgumentNotValidException ex,
+            @NonNull HttpHeaders headers,
+            @NonNull HttpStatusCode status,
+            @NonNull WebRequest request
+    ) {
+        ProblemDetail pd = createProblemDetail(
+                ex, status, "La solicitud contiene campos inválidos.",
+                null, null, request
+        );
+        pd.setTitle("Solicitud inválida");
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ProblemDetail handleArgumentNotValid(MethodArgumentNotValidException ex, HttpServletRequest req) {
-        var problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
-        problemDetail.setTitle("Validación fallida");
-        problemDetail.setDetail("El body del request tiene cambos inválidos");
-        problemDetail.setProperty("errors", ex.getBindingResult().getFieldErrors().stream()
-                .map(fe -> Map.of("field", fe.getField(), "message", fe.getDefaultMessage()))
-                .toList());
-        problemDetail.setProperty("path", req.getRequestURI());
-        return problemDetail;
+        BindingResult bindingResult = ex.getBindingResult();
+        List<Map<String, Object>> errors = bindingResult.getFieldErrors().stream()
+                .map(err -> Map.of(
+                        "campo", err.getField(),
+                        "valorRechazado", err.getRejectedValue(),
+                        "mensaje", messageOf(err),
+                        "codigo", err.getCode()))
+                .collect(Collectors.toList());
+        pd.setProperty("errores", errors);
+
+        return handleExceptionInternal(ex, pd, headers, status, request);
     }
 
-    @ExceptionHandler(AccessDeniedException.class)
-    public ProblemDetail handleAcessDenied(AccessDeniedException ex, HttpServletRequest req) {
-        var problemDetail = ProblemDetail.forStatus(HttpStatus.FORBIDDEN);
-        problemDetail.setTitle("Acesso denegado");
-        problemDetail.setDetail("No se permitió el avance");
-        problemDetail.setProperty("errors", ex.getMessage());
-        problemDetail.setProperty("path", req.getRequestURI());
-        return problemDetail;
+    private static String messageOf(FieldError err) {
+        return StringUtils.hasText(err.getDefaultMessage())
+                ? err.getDefaultMessage()
+                : "Valor inválido";
     }
 
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ProblemDetail handleConstraintViolation(ConstraintViolationException ex, HttpServletRequest req) {
-        var pd = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
-        pd.setTitle("Constraint violation");
-        pd.setProperty("errors", ex.getConstraintViolations().stream()
-                .map(v -> Map.of("param", v.getPropertyPath().toString(), "message", v.getMessage()))
-                .toList());
-        pd.setProperty("path", req.getRequestURI());
-        return pd;
+    // VALIDACIÓN (@RequestParam/@PathVariable)
+    @Override
+    protected ResponseEntity<Object> handleHandlerMethodValidationException(
+            @NonNull HandlerMethodValidationException ex,
+            @NonNull HttpHeaders headers,
+            @NonNull HttpStatusCode status,
+            @NonNull WebRequest request
+    ) {
+        ProblemDetail pd = createProblemDetail(
+                ex, status, "Parámetros de la solicitud inválidos.", null, null, request);
+        pd.setTitle("Solicitud inválida");
+
+        List<Map<String, Object>> errors = ex.getParameterValidationResults().stream()
+                .flatMap(paramResult -> paramResult.getResolvableErrors().stream()
+                        .map(res -> Map.<String, Object>of(
+                                "parametro", Optional.ofNullable(paramResult.getMethodParameter().getParameterName()).orElse("argumento"),
+                                "mensaje", StringUtils.hasText(res.getDefaultMessage()) ? res.getDefaultMessage() : "Valor inválido",
+                                "codigos", Arrays.asList(res.getCodes() == null ? new String[0] : res.getCodes())
+                        )))
+                .collect(Collectors.toList());
+        pd.setProperty("errores", errors);
+
+        return handleExceptionInternal(ex, pd, headers, status, request);
     }
 
-    @ExceptionHandler({ IllegalArgumentException.class, IllegalStateException.class })
-    public ProblemDetail handleBadRequest(RuntimeException ex, HttpServletRequest req) {
-        var pd = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
-        pd.setTitle("Bad request");
-        pd.setDetail(ex.getMessage());
-        pd.setProperty("path", req.getRequestURI());
-        return pd;
+    // BODY
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(
+            @NonNull HttpMessageNotReadableException ex,
+            @NonNull HttpHeaders headers,
+            @NonNull HttpStatusCode status,
+            @NonNull WebRequest request
+    ) {
+        ProblemDetail pd = createProblemDetail(
+                ex, status, "No se pudo leer el cuerpo de la solicitud (JSON mal formado).", null, null, request);
+        pd.setTitle("Solicitud inválida");
+        return handleExceptionInternal(ex, pd, headers, status, request);
     }
 
-    @ExceptionHandler(UnsupportedMediaTypeException.class)
-    public ProblemDetail handleUnsupportedMediaTypeStatus(UnsupportedMediaTypeException ex, HttpServletRequest req) {
-        var pd = ProblemDetail.forStatus(HttpStatus.NOT_ACCEPTABLE);
-        pd.setTitle("Media type not supported");
-        pd.setDetail(ex.getMessage());
-        pd.setProperty("path", req.getRequestURI());
-        return pd;
+    // TYPE MISMATCH (query/path param)
+    @Override
+    protected ResponseEntity<Object> handleTypeMismatch(
+            @NonNull TypeMismatchException ex,
+            @NonNull HttpHeaders headers,
+            @NonNull HttpStatusCode status,
+            @NonNull WebRequest request
+    ) {
+        ProblemDetail pd = createProblemDetail(
+                ex, status, "El tipo de dato del parámetro es inválido.", null, null, request);
+        pd.setTitle("Solicitud inválida");
+
+        if (ex instanceof MethodArgumentTypeMismatchException matme) {
+            pd.setDetail(("El parámetro '%s' debe ser de tipo %s.")
+                    .formatted(matme.getName(),
+                            matme.getRequiredType() != null ? matme.getRequiredType().getSimpleName() : "requerido"));
+            pd.setProperty("parametro", matme.getName());
+            pd.setProperty("tipoRequerido", matme.getRequiredType() != null ? matme.getRequiredType().getName() : null);
+            pd.setProperty("valor", matme.getValue());
+        }
+        return handleExceptionInternal(ex, pd, headers, status, request);
     }
 
+    // MISSING PARAM
+    @Override
+    protected ResponseEntity<Object> handleMissingServletRequestParameter(
+            @NonNull MissingServletRequestParameterException ex,
+            @NonNull HttpHeaders headers,
+            @NonNull HttpStatusCode status,
+            @NonNull WebRequest request
+    ) {
+        ProblemDetail pd = createProblemDetail(
+                ex, status, "Falta un parámetro obligatorio en la solicitud.", null, null, request);
+        pd.setTitle("Solicitud inválida");
+        pd.setDetail(("Falta el parámetro '%s'.").formatted(ex.getParameterName()));
+        return handleExceptionInternal(ex, pd, headers, status, request);
+    }
+
+    // 404 dinámico (no hay handler)
+    @Override
+    protected ResponseEntity<Object> handleNoHandlerFoundException(
+            @NonNull NoHandlerFoundException ex,
+            @NonNull HttpHeaders headers,
+            @NonNull HttpStatusCode status,
+            @NonNull WebRequest request
+    ) {
+        ProblemDetail pd = createProblemDetail(
+                ex, status, "No se encontró el recurso solicitado.", null, null, request);
+        pd.setTitle("No encontrado");
+        pd.setDetail(("No se encontró un handler para %s %s.")
+                .formatted(ex.getHttpMethod(), ex.getRequestURL()));
+        return handleExceptionInternal(ex, pd, headers, status, request);
+    }
+
+    // 404 estático (recursos)
+    @Override
+    protected ResponseEntity<Object> handleNoResourceFoundException(
+            @NonNull NoResourceFoundException ex,
+            @NonNull HttpHeaders headers,
+            @NonNull HttpStatusCode status,
+            @NonNull WebRequest request
+    ) {
+        ProblemDetail pd = createProblemDetail(
+                ex, status, "Recurso no encontrado.", null, null, request);
+        pd.setTitle("No encontrado");
+        return handleExceptionInternal(ex, pd, headers, status, request);
+    }
+
+    // 405 / 415
+    @Override
+    protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(
+            @NonNull  HttpRequestMethodNotSupportedException ex,
+            @NonNull HttpHeaders headers,
+            @NonNull HttpStatusCode status,
+            @NonNull WebRequest request
+    ) {
+        ProblemDetail pd = createProblemDetail(
+                ex, status, "Método HTTP no permitido para este recurso.", null, null, request);
+        pd.setTitle("Método no permitido");
+        pd.setProperty("metodosSoportados", ex.getSupportedHttpMethods());
+        return handleExceptionInternal(ex, pd, headers, status, request);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleHttpMediaTypeNotSupported(
+            @NonNull HttpMediaTypeNotSupportedException ex,
+            @NonNull HttpHeaders headers,
+            @NonNull HttpStatusCode status,
+            @NonNull WebRequest request
+    ) {
+        ProblemDetail pd = createProblemDetail(
+                ex, status, "Tipo de contenido no soportado.", null, null, request);
+        pd.setTitle("Tipo de contenido no soportado");
+        pd.setProperty("soportados", ex.getSupportedMediaTypes());
+        return handleExceptionInternal(ex, pd, headers, status, request);
+    }
+
+    // NEGOCIO
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ProblemDetail handleResourceNotFound(ResourceNotFoundException ex, HttpServletRequest req) {
-        var pd = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
-        pd.setTitle("Resource not found");
+    public ProblemDetail handleResourceNotFound(ResourceNotFoundException ex) {
+        ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
+        pd.setTitle("Recurso no encontrado");
         pd.setDetail(ex.getMessage());
-        pd.setProperty("path", req.getRequestURI());
         return pd;
     }
 
     @ExceptionHandler(StorageUnavailableException.class)
-    public ProblemDetail handleStorageUnavailable(StorageUnavailableException ex, HttpServletRequest req) {
-        var pd = ProblemDetail.forStatus(HttpStatus.BAD_GATEWAY);
-        pd.setTitle("Storage error");
+    public ResponseEntity<ProblemDetail> handleStorageUnavailable(StorageUnavailableException ex) {
+        ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.SERVICE_UNAVAILABLE);
+        pd.setTitle("Servicio no disponible");
         pd.setDetail(ex.getMessage());
-        pd.setProperty("path", req.getRequestURI());
-        return pd;
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                // .header(HttpHeaders.RETRY_AFTER, "30") // opcional si querés indicar reintento
+                .body(pd);
     }
 
-    @ExceptionHandler(S3Exception.class)
-    public ProblemDetail handleS3(S3Exception ex, HttpServletRequest req) {
-        var pd = ProblemDetail.forStatus(HttpStatus.BAD_GATEWAY);
-        pd.setTitle("Storage error");
+    @ExceptionHandler(UnsupportedMediaTypeStatusException.class)
+    public ResponseEntity<ProblemDetail> handleUnsupportedMediaType(UnsupportedMediaTypeStatusException ex) {
+        ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+        pd.setTitle("Tipo de contenido no soportado");
         pd.setDetail(ex.getMessage());
-        pd.setProperty("path", req.getRequestURI());
-        pd.setProperty("awsStatusCode", ex.statusCode());
-        return pd;
+        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(pd);
     }
 
+    // FALLBACK (cualquier otra Exception)
     @ExceptionHandler(Exception.class)
-    public ProblemDetail handleGeneric(Exception ex, HttpServletRequest req) {
-        var pd = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-        pd.setTitle("Unexpected error");
-        pd.setDetail("Something went wrong");
-        pd.setProperty("path", req.getRequestURI());
-        return pd;
+    public ResponseEntity<Object> handleAny(Exception ex, WebRequest request) {
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        ProblemDetail pd = createProblemDetail(
+                ex, status,
+                "Ocurrió un error inesperado.",
+                null, null, request
+        );
+        pd.setTitle("Error interno del servidor");
+        return handleExceptionInternal(ex, pd, new HttpHeaders(), status, request);
     }
 
 }
