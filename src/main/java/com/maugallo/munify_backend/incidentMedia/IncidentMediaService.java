@@ -104,6 +104,7 @@ public class IncidentMediaService {
         int scIdx = mime.indexOf(';');
         String base = (scIdx >= 0 ? mime.substring(0, scIdx) : mime).trim().toLowerCase();
 
+        System.out.println("Base: " + base);
         return switch (base) {
             // imágenes
             case "image/jpeg", "image/jpg" -> "jpg";

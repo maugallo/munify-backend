@@ -39,6 +39,9 @@ public class MediaMinIOConfig {
                 .region(Region.of(storageProps.region()))
                 .credentialsProvider(StaticCredentialsProvider.create(
                         AwsBasicCredentials.create(storageProps.accessKey(), storageProps.secretKey())))
+                .serviceConfiguration(S3Configuration.builder()
+                    .pathStyleAccessEnabled(true)
+                    .build())
                 .build();
     }
 
