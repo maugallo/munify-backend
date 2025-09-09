@@ -14,6 +14,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity
 public class SecurityConfig {
 
+    /* SECURITY:
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -26,6 +27,26 @@ public class SecurityConfig {
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
             .httpBasic(Customizer.withDefaults());
+
+        return http.build();
+    }
+     */
+
+    @Bean
+    SecurityFilterChain devFilterChain(HttpSecurity http) throws Exception {
+        http.csrf(csrf -> csrf.disable());
+
+        http.authorizeHttpRequests(auth -> auth
+                .requestMatchers(
+                        "/swagger-ui/**",
+                        "/v3/api-docs/**",
+                        "/v3/api-docs.yaml"
+                ).permitAll()
+                .anyRequest().permitAll()
+        );
+
+        http.httpBasic(c -> c.disable());
+        http.formLogin(c -> c.disable());
 
         return http.build();
     }

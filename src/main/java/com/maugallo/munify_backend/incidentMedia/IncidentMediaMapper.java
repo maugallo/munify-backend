@@ -19,7 +19,7 @@ public interface IncidentMediaMapper {
     @Mapping(target = "size", source = "size")
     @Mapping(target = "storageKey", source = "storageKey")
     @Mapping(target = "url", ignore = true)
-    IncidentMediaResponseDTO toResponse(IncidentMedia src);
+    IncidentMediaResponseDTO toResponse(IncidentMedia media);
 
     /* Medias with readable urls. */
     @Named("withUrl")
@@ -28,7 +28,7 @@ public interface IncidentMediaMapper {
     @Mapping(target = "mime", source = "mime")
     @Mapping(target = "size", source = "size")
     @Mapping(target = "storageKey", source = "storageKey")
-    @Mapping(target = "url", expression = "java(linkBuilder != null ? linkBuilder.buildTemporalUrl(src.getStorageKey()) : null)")
-    IncidentMediaResponseDTO toResponse(IncidentMedia src, @Context MediaLinkBuilder linkBuilder);
+    @Mapping(target = "url", expression = "java(linkBuilder != null ? linkBuilder.buildTemporalUrl(media.getStorageKey()) : null)")
+    IncidentMediaResponseDTO toResponse(IncidentMedia media, @Context MediaLinkBuilder linkBuilder);
 
 }

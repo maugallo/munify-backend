@@ -1,4 +1,4 @@
-package com.maugallo.munify_backend.municipality.dto;
+package com.maugallo.munify_backend.municipality.dto.customization;
 
 import com.maugallo.munify_backend.municipalityFeature.dto.FeatureUpdateDTO;
 

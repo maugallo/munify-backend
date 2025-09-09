@@ -14,8 +14,8 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
 import java.net.URI;
 
-@Configuration
 @Profile("dev")
+@Configuration
 @EnableConfigurationProperties(StorageProps.class)
 public class MediaMinIOConfig {
 

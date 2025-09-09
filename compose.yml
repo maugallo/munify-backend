@@ -1,34 +1,86 @@
-# compose.yml
 services:
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
-    ports:
-      - "1433:1433"
+    container_name: munify-sqlserver
     environment:
       ACCEPT_EULA: "Y"
-      MSSQL_SA_PASSWORD: "${DB_PASSWORD}"
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
       MSSQL_PID: "Developer"
+    ports:
+      - "1433:1433"
     volumes:
-      - sqlserver_data:/var/opt/mssql
+      - mssql-data:/var/opt/mssql
+    # Healthcheck simple: el puerto TDS (1433) acepta conexiones.
     healthcheck:
-      test: ["CMD-SHELL", "bash -c '</dev/tcp/127.0.0.1/1433' || exit 1"]
+      test: ["CMD-SHELL", "bash -lc '</dev/tcp/127.0.0.1/1433'"]
       interval: 5s
       timeout: 3s
       retries: 30
+      start_period: 20s
     restart: unless-stopped
 
-  sqlserver-init:
-    image: mcr.microsoft.com/mssql-tools
+  # Inicializa la BD "Munify" y luego queda en idle.
+  mssql-init:
+    image: mcr.microsoft.com/mssql-tools:latest
     depends_on:
       sqlserver:
         condition: service_healthy
     environment:
-      MSSQL_SA_PASSWORD: "${DB_PASSWORD}"
-    entrypoint: ["/bin/sh", "-c"]
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+    entrypoint: ["/bin/bash", "-lc"]
     command: >
-      "/opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P \"$DB_PASSWORD\" -C
-       -Q \"IF DB_ID('Munify') IS NULL CREATE DATABASE Munify;\""
+      "
+      until /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P \"$MSSQL_SA_PASSWORD\" -Q \"SELECT 1\" >/dev/null 2>&1;
+      do sleep 2; done;
+      /opt/mssql-tools/bin/sqlcmd -S sqlserver -U sa -P \"$MSSQL_SA_PASSWORD\" -Q \"
+        IF DB_ID(N''Munify'') IS NULL
+          CREATE DATABASE [Munify];
+      \";
+      echo \"Database Munify ready.\";
+      tail -f /dev/null
+      "
+    restart: "no"
+
+  minio:
+    image: minio/minio:latest
+    container_name: munify-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    ports:
+      - "9000:9000" # S3 API
+      - "9001:9001" # Web console
+    volumes:
+      - minio-data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/ready"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  # Crea el bucket y queda en idle.
+  minio-init:
+    image: minio/mc:latest
+    depends_on:
+      minio:
+        condition: service_healthy
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      STORAGE_BUCKET: ${STORAGE_BUCKET}
+    entrypoint: ["/bin/sh", "-lc"]
+    command: >
+      "
+      mc alias set local http://minio:9000 \"$MINIO_ROOT_USER\" \"$MINIO_ROOT_PASSWORD\";
+      mc mb --ignore-existing local/\"$STORAGE_BUCKET\";
+      mc ls local;
+      echo \"Bucket $STORAGE_BUCKET ready.\";
+      tail -f /dev/null
+      "
     restart: "no"
 
 volumes:
-  sqlserver_data:
+  mssql-data:
+  minio-data:

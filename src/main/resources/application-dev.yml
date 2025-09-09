@@ -1,8 +1,22 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate.format_sql: true
+
+  docker.compose:
+      lifecycle-management: start_only
+
+  flyway:
+    enabled: false
+
 storage:
-  bucket: munify-media
-  region: us-east-1
   endpoint: http://localhost:9000
-  accessKey: minioadmin
-  secretKey: minioadmin
+  bucket: ${STORAGE_BUCKET}
+  region: us-east-1
+  accessKey: ${MINIO_ROOT_USER}
+  secretKey: ${MINIO_ROOT_PASSWORD}
   putTtl: PT10M   # 10 minutos
   getTtl: PT5M   # 5 minutos

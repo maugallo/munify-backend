@@ -29,9 +29,7 @@ public class IncidentController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<IncidentResponseDTO>> getIncidents(
-            @PathVariable Long municipalityId
-    ) {
+    public ResponseEntity<List<IncidentResponseDTO>> getIncidents(@PathVariable Long municipalityId) {
         var incidents = incidentService.getIncidents(municipalityId);
         return ResponseEntity.status(HttpStatus.OK).body(incidents);
     }

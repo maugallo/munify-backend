@@ -40,6 +40,9 @@ public class Municipality {
     @UpdateTimestamp
     private LocalDateTime  updatedAt;
 
+    @Column
+    private Boolean isEnabled;
+
     @Builder.Default
     @OneToMany(mappedBy = "municipality", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MunicipalityFeature> features = new ArrayList<>();
