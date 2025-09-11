@@ -21,9 +21,9 @@ public class IncidentMediaController {
     @PostMapping("/incidents-media/prepare")
     public ResponseEntity<IncidentMediaPrepareResponseDTO> prepare(
             @PathVariable Long municipalityId,
-            @Valid @RequestBody IncidentMediaPrepareRequestDTO medias
+            @Valid @RequestBody IncidentMediaPrepareRequestDTO media
     ) {
-        var preparedMedias = incidentMediaService.prepareUploads(municipalityId, medias);
+        var preparedMedias = incidentMediaService.prepareUpload(municipalityId, media);
         return ResponseEntity.status(HttpStatus.CREATED).body(preparedMedias);
     }
 

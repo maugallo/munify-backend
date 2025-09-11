@@ -26,24 +26,18 @@ public class IncidentMediaService {
         this.keyBuilder = keyBuilder;
     }
 
-    public IncidentMediaPrepareResponseDTO prepareUploads(Long municipalityId, IncidentMediaPrepareRequestDTO medias) {
-        var items = medias.items()
-                .stream()
-                .map(media -> {
-                    var extension = getExtension(media.mime());
-                    var storageKey = keyBuilder.forIncidentStaging(municipalityId, media.clientFileId(), extension);
-                    var presignedPut = mediaStorage.presignPut(storageKey, media.mime());
-                    var presignedUrl = new PresignedUrlDTO(
-                            presignedPut.url(),
-                            "PUT",
-                            presignedPut.expiresAtSec(),
-                            presignedPut.requiredHeaders()
-                    );
+    public IncidentMediaPrepareResponseDTO prepareUpload(Long municipalityId, IncidentMediaPrepareRequestDTO media) {
+        var extension = getExtension(media.mime());
+        var storageKey = keyBuilder.forIncidentStaging(municipalityId, media.clientFileId(), extension);
+        var presignedPut = mediaStorage.presignPut(storageKey, media.mime());
+        var presignedUrl = new PresignedUrlDTO(
+                presignedPut.url(),
+                "PUT",
+                presignedPut.expiresAtSec(),
+                presignedPut.requiredHeaders()
+        );
 
-                    return new IncidentMediaPrepareItemResponseDTO(media.clientFileId(), storageKey, presignedUrl);
-                }).toList();
-
-        return new IncidentMediaPrepareResponseDTO(items);
+        return new IncidentMediaPrepareResponseDTO(media.clientFileId(), storageKey, presignedUrl);
     }
 
     public void abortUpload(Long municipalityId, String storageKey) {
