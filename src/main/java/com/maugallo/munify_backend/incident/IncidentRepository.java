@@ -11,7 +11,4 @@ public interface IncidentRepository extends JpaRepository<Incident, Long> {
 
     Optional<Incident> findByIdAndMunicipalityIdAndIsEnabledTrue(Long id, Long municipalityId);
 
-    Optional<Incident> findByIdAndMunicipalityIdAndCitizenIdAndIsEnabledTrue(
-            Long id, Long municipalityId, Long citizenId);
-
 }

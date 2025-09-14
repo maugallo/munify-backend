@@ -1,5 +1,6 @@
 package com.maugallo.munify_backend.incident.dto;
 
+import com.maugallo.munify_backend.incident.IncidentCategory;
 import com.maugallo.munify_backend.incident.IncidentStatus;
 import com.maugallo.munify_backend.incidentMedia.dto.IncidentMediaResponseDTO;
 
@@ -11,6 +12,7 @@ public record IncidentResponseDTO(
     String title,
     String description,
     IncidentStatus status,
+    IncidentCategory category,
     Double latitude,
     Double longitude,
     String address,

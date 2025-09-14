@@ -43,4 +43,9 @@ public class IncidentController {
         return ResponseEntity.ok(incidentService.getIncident(id, municipalityId, includeMediaUrls));
     }
 
+    @GetMapping("/categories")
+    public ResponseEntity<IncidentCategory[]> getIncidentCategories() {
+        return ResponseEntity.ok(IncidentCategory.values());
+    }
+
 }

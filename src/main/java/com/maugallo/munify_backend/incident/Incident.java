@@ -3,7 +3,6 @@ package com.maugallo.munify_backend.incident;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.maugallo.munify_backend.citizen.Citizen;
 import com.maugallo.munify_backend.employee.Employee;
-import com.maugallo.munify_backend.incidentCategory.IncidentCategory;
 import com.maugallo.munify_backend.incidentMedia.IncidentMedia;
 import com.maugallo.munify_backend.municipality.Municipality;
 import jakarta.persistence.*;
@@ -36,6 +35,9 @@ public class Incident {
     @Enumerated(EnumType.STRING)
     private IncidentStatus status;
 
+    @Enumerated(EnumType.STRING)
+    private IncidentCategory category;
+
     @Column
     private Double latitude;
 
@@ -63,9 +65,6 @@ public class Incident {
     @Column(name = "employee_id")
     private Long employeeId;
 
-    @Column(name = "category_id", nullable = false)
-    private Long categoryId;
-
     @Builder.Default
     @OneToMany(mappedBy = "incident")
     private List<IncidentMedia> medias = new ArrayList<>();
@@ -90,11 +89,5 @@ public class Incident {
     @JsonIgnore
     @ToString.Exclude
     protected Employee employee;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id", insertable = false, updatable = false)
-    @JsonIgnore
-    @ToString.Exclude
-    protected IncidentCategory category;
 
 }

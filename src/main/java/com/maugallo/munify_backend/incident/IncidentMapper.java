@@ -16,6 +16,7 @@ public interface IncidentMapper {
     @Mapping(target = "title", source = "title")
     @Mapping(target = "description", source = "description")
     @Mapping(target = "status", constant = "PENDIENTE")
+    @Mapping(target = "category", source = "category")
     @Mapping(target = "latitude", source = "latitude")
     @Mapping(target = "longitude", source = "longitude")
     @Mapping(target = "address", source = "address")
@@ -25,12 +26,10 @@ public interface IncidentMapper {
     @Mapping(target = "municipalityId", source = "municipalityId")
     @Mapping(target = "citizenId", source = "citizenId")
     @Mapping(target = "employeeId", ignore = true)
-    @Mapping(target = "categoryId", source = "categoryId")
-    @Mapping(target = "medias", ignore = true) // las medias se asocian en el commit del servicio
+    @Mapping(target = "medias", ignore = true) // las medias se asocian en el servicio
     @Mapping(target = "municipality", ignore = true)
     @Mapping(target = "citizen", ignore = true)
     @Mapping(target = "employee", ignore = true)
-    @Mapping(target = "category", ignore = true)
     Incident toEntity(IncidentRequestDTO incident);
 
     /* Medias without readable urls. */
@@ -38,6 +37,7 @@ public interface IncidentMapper {
     @Mapping(target = "title", source = "title")
     @Mapping(target = "description", source = "description")
     @Mapping(target = "status", source = "status")
+    @Mapping(target = "category", source = "category")
     @Mapping(target = "latitude", source = "latitude")
     @Mapping(target = "longitude", source = "longitude")
     @Mapping(target = "address", source = "address")
@@ -53,6 +53,7 @@ public interface IncidentMapper {
     @Mapping(target = "title", source = "title")
     @Mapping(target = "description", source = "description")
     @Mapping(target = "status", source = "status")
+    @Mapping(target = "category", source = "category")
     @Mapping(target = "latitude", source = "latitude")
     @Mapping(target = "longitude", source = "longitude")
     @Mapping(target = "address", source = "address")

@@ -1,6 +1,8 @@
 package com.maugallo.munify_backend.incident.dto;
 
+import com.maugallo.munify_backend.incident.IncidentCategory;
 import com.maugallo.munify_backend.incidentMedia.dto.IncidentMediaRequestDTO;
+import com.maugallo.munify_backend.validation.EnumValidator;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 
@@ -40,7 +42,6 @@ public record IncidentRequestDTO(
     @Pattern(regexp = "\\d+", message = "citizenId debe ser numérico")
     String municipalityId,
 
-    @NotBlank(message = "categoryId es requerido")
-    @Pattern(regexp = "\\d+", message = "citizenId debe ser numérico")
-    String categoryId
+    @EnumValidator(enumClass = IncidentCategory.class, message = "La categoría no es válida")
+    String category
 ) { }
