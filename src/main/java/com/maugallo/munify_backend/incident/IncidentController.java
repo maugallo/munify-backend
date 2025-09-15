@@ -19,15 +19,6 @@ public class IncidentController {
         this.incidentService = incidentService;
     }
 
-    @PostMapping()
-    public ResponseEntity<IncidentResponseDTO> createIncident(
-            @PathVariable Long municipalityId,
-            @Valid @RequestBody IncidentRequestDTO body
-    ) {
-        var responseDto = incidentService.createIncident(municipalityId, body);
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
-    }
-
     @GetMapping()
     public ResponseEntity<List<IncidentResponseDTO>> getIncidents(@PathVariable Long municipalityId) {
         var incidents = incidentService.getIncidents(municipalityId);
@@ -43,9 +34,13 @@ public class IncidentController {
         return ResponseEntity.ok(incidentService.getIncident(id, municipalityId, includeMediaUrls));
     }
 
-    @GetMapping("/categories")
-    public ResponseEntity<IncidentCategory[]> getIncidentCategories() {
-        return ResponseEntity.ok(IncidentCategory.values());
+    @PostMapping()
+    public ResponseEntity<IncidentResponseDTO> createIncident(
+            @PathVariable Long municipalityId,
+            @Valid @RequestBody IncidentRequestDTO body
+    ) {
+        var responseDto = incidentService.createIncident(municipalityId, body);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
 }
