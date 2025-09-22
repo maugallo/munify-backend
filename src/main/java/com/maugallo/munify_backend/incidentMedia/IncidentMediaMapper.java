@@ -11,7 +11,7 @@ import org.mapstruct.Named;
 @Mapper(config = GlobalMapperConfig.class)
 public interface IncidentMediaMapper {
 
-    /* Medias without readable urls. */
+    /* Medias helper without readable urls. */
     @Named("noUrl")
     @Mapping(target = "id", source = "id")
     @Mapping(target = "type", source = "type")
@@ -21,7 +21,7 @@ public interface IncidentMediaMapper {
     @Mapping(target = "url", ignore = true)
     IncidentMediaResponseDTO toResponse(IncidentMedia media);
 
-    /* Medias with readable urls. */
+    /* Medias helper with readable urls. */
     @Named("withUrl")
     @Mapping(target = "id", source = "id")
     @Mapping(target = "type", source = "type")

@@ -30,7 +30,7 @@ public class IncidentMediaService {
         var extension = getExtension(media.mime());
         var storageKey = keyBuilder.forIncidentStaging(municipalityId, media.clientFileId(), extension);
         var presignedPut = mediaStorage.presignPut(storageKey, media.mime());
-        var presignedUrl = new PresignedUrlDTO(
+        var presignedUrl = new IncidentMediaPrepareResponseDTO.PresignedUrlDTO(
                 presignedPut.url(),
                 "PUT",
                 presignedPut.expiresAtSec(),

@@ -1,7 +1,6 @@
 package com.maugallo.munify_backend.config;
 
 import com.maugallo.munify_backend.media.StorageProps;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -9,9 +8,8 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
-@Configuration
 @Profile("prod")
-@EnableConfigurationProperties(StorageProps.class)
+@Configuration
 public class MediaS3Config {
 
     @Bean

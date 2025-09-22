@@ -12,6 +12,12 @@ spring:
   flyway:
     enabled: false
 
+google:
+  maps:
+    apiKey: ${GOOGLE_MAPS_API_KEY}
+    places.baseUrl: https://places.googleapis.com/v1
+    geocoding.baseUrl: https://maps.googleapis.com/maps/api/geocode
+
 storage:
   endpoint: http://localhost:9000
   bucket: ${STORAGE_BUCKET}

@@ -1,7 +1,6 @@
 package com.maugallo.munify_backend.config;
 
 import com.maugallo.munify_backend.media.StorageProps;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -16,7 +15,6 @@ import java.net.URI;
 
 @Profile("dev")
 @Configuration
-@EnableConfigurationProperties(StorageProps.class)
 public class MediaMinIOConfig {
 
     @Bean
