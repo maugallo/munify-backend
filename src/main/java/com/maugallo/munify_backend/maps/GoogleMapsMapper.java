@@ -68,7 +68,7 @@ public interface GoogleMapsMapper {
         if (list == null || list.isEmpty())
             return new ReverseResponseDTO.Address("");
 
-        return new ReverseResponseDTO.Address(list.getFirst().formatted_address());
+        return new ReverseResponseDTO.Address(AddressFormatter.friendlyFromReverse(reverse));
     }
 
 }
